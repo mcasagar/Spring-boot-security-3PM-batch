@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.sagarbhoi.service.JwtTokenBlacklistService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,11 +24,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	
 	private JwtTokenProvider jwtTokenProvider;
 	private UserDetailsService userDetailsService;
+	private JwtTokenBlacklistService jwtTokenBlacklistService;
 	
 	//constructor injection
-	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService) {
+	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserDetailsService userDetailsService, JwtTokenBlacklistService jwtTokenBlacklistService) {
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.userDetailsService = userDetailsService;
+		this.jwtTokenBlacklistService = jwtTokenBlacklistService;
 	}
 
 	@Override
@@ -36,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			// get the token from the request 
 			String token = getTokenFromRequest(request);
 		   // validate token
-			if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+			if(StringUtils.hasText(token) && jwtTokenProvider.validateToken(token) && !jwtTokenBlacklistService.isBlacklisted(token)) {
 				  // get username from token
 				  String username = jwtTokenProvider.getUsernameFromToken(token);
 				  // load user object from the database using username

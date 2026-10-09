@@ -1,10 +1,10 @@
 package com.sagarbhoi.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,5 +36,18 @@ public class AuthController {
 		JwtAuthResponseDto jwtAuthResponseDto = new JwtAuthResponseDto(token);
 		//return new ResponseEntity<>(message, HttpStatus.OK);
 		return ResponseEntity.ok(jwtAuthResponseDto);
+	}
+	
+	@PostMapping("/logout") 
+	public ResponseEntity<String> logout( @RequestHeader("Authorization") String authorizationHeader) 
+	{ 
+		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) { 
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); 
+		} 
+		String token = authorizationHeader.substring(7); 
+		String message = authService.logout(token); 
+		//return ResponseEntity.noContent().build();
+		return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
+		
 	}
 }

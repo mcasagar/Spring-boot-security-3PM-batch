@@ -1,5 +1,6 @@
 package com.sagarbhoi.service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,15 +29,18 @@ public class AuthServiceImpl implements AuthService {
 	private RoleRepository roleRepository;
 	private AuthenticationManager authenticationManager;
 	private JwtTokenProvider jwtTokenProvider;
+	private JwtTokenBlacklistService jwtTokenBlacklistService;
 	
 	//constructor injection
 	public AuthServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncorder,
-											 AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+											 AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
+											 JwtTokenBlacklistService jwtTokenBlacklistService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.passwordEncorder = passwordEncorder;
 		this.authenticationManager = authenticationManager;
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.jwtTokenBlacklistService = jwtTokenBlacklistService;
 	}
 	
 	@Override
@@ -82,6 +86,17 @@ public class AuthServiceImpl implements AuthService {
 		String token = jwtTokenProvider.generateToken(authentication);
 		
 		return token;
+	}
+
+	@Override
+	public String logout(String token) {
+		// Validate JWT before blacklisting it 
+		if (!jwtTokenProvider.validateToken(token)) { 
+			throw new IllegalArgumentException("Invalid JWT"); 
+		} 
+		Date expiration = jwtTokenProvider.getExpirationFromToken(token); 
+		jwtTokenBlacklistService.blacklistToken(token, expiration);
+		return "logout successfully...";
 	}
 
 }
