@@ -29,8 +29,7 @@ public class CustomSecurityConfiguration {
 		.requestMatchers(HttpMethod.GET, "/api/welcome").permitAll()
 		.anyRequest().authenticated()
 		
-		
-		);
+	);
 		
 		http.formLogin(form -> form.disable());
 		http.httpBasic(withDefaults());
