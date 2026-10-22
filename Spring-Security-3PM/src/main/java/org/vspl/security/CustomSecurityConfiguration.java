@@ -5,6 +5,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -24,6 +26,11 @@ public class CustomSecurityConfiguration {
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Bean 
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+	
 	@Bean
 	SecurityFilterChain customSecurityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests((requests) -> requests
@@ -39,22 +46,22 @@ public class CustomSecurityConfiguration {
 	}
 	
 	
-	@Bean
-	UserDetailsService userDetailsService() {
-		
-		UserDetails admin = User.builder()
-				.username("admin123")
-				.password(passwordEncoder().encode("321"))
-				.roles("ADMIN")
-				.build();
-		UserDetails user = User.builder()
-				.username("sam123")
-				.password(passwordEncoder().encode("321"))
-				.roles("USER")
-				.build();
-		
-		return new InMemoryUserDetailsManager(admin, user);
-		
-	}
+//	@Bean
+//	UserDetailsService userDetailsService() {
+//		
+//		UserDetails admin = User.builder()
+//				.username("admin123")
+//				.password(passwordEncoder().encode("321"))
+//				.roles("ADMIN")
+//				.build();
+//		UserDetails user = User.builder()
+//				.username("sam123")
+//				.password(passwordEncoder().encode("321"))
+//				.roles("USER")
+//				.build();
+//		
+//		return new InMemoryUserDetailsManager(admin, user);
+//		
+//	}
 
 }
