@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.vspl.exception.CustomAuthenticationEntryPoint;
 
 @Configuration
 @EnableMethodSecurity
@@ -36,12 +37,14 @@ public class CustomSecurityConfiguration {
 		http.authorizeHttpRequests((requests) -> requests
 		.requestMatchers(HttpMethod.GET, "/api/admin", "/api/user").authenticated()
 		.requestMatchers(HttpMethod.GET, "/api/welcome").permitAll()
+		.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 		.anyRequest().authenticated()
 		
 	);
 		
 		http.formLogin(form -> form.disable());
-		http.httpBasic(withDefaults());
+		http.httpBasic(httpBasic -> httpBasic.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
+		http.csrf(csrf -> csrf.disable());
 		return http.build();
 	}
 	
