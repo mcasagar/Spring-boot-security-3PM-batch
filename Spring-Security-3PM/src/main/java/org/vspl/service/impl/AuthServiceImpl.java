@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
 		
 		return "User register successfully";
 	}
-	
+	//Login api created
 	@Override
 	public String login(LoginDto loginDto) {
 		Authentication authenticate = authenticationManager.authenticate(
